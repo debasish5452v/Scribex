@@ -7,13 +7,15 @@ Built with React, Node.js, and integrated with industry-leading APIs including G
 ## 📸 Screenshots
 
 ### 🏠 Home Page
-![Home Page](./screenshots/Home.png)
+<img width="1352" height="605" alt="image" src="https://github.com/user-attachments/assets/1c883ce1-ff31-4855-87a4-6f6384579bb6" />
+
 - Landing page with hero section
 - Feature highlights and pricing overview
 - Clean, modern design with gradient backgrounds
 
 ### 📊 Dashboard
-![Dashboard](./screenshots/dashboard.png)
+<img width="1348" height="598" alt="image" src="https://github.com/user-attachments/assets/ddee93af-29fb-40a6-8d3d-872b77f84c80" />
+
 - User statistics and metrics
 - Recent creations with accordion-style expansion
 - Plan status indicator (Free/Premium)
@@ -21,49 +23,56 @@ Built with React, Node.js, and integrated with industry-leading APIs including G
 - Quick access to previous work
 
 ### ✍️ AI Article Writer
-![AI Article Writer](./screenshots/article.png)
+<img width="1362" height="593" alt="image" src="https://github.com/user-attachments/assets/c71c8e4a-712a-41d6-924a-1e508dd66ac1" />
+
 - Topic input with length selection
 - Real-time generation with loading states
 - Markdown-formatted output with copy functionality
 - One-click copy button for easy sharing
 
 ### 🏷️ Blog Title Generator
-![Blog Title Generator](./screenshots/blog_title.png)
+<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/0d40ae7e-4e19-47d7-a5dd-190c8ec42513" />
+
 - Category and keyword-based generation
 - Multiple title suggestions
 - Industry-specific optimization
 - Copy functionality for generated titles
 
 ### 🎨 AI Image Generator (Premium)
-![AI Image Generator](./screenshots/image_generation.png)
+<img width="1365" height="598" alt="image" src="https://github.com/user-attachments/assets/5631c7c7-2a63-4acb-8beb-0057c218f3b4" />
+
 - Text-to-image generation with style options
 - High-quality AI-generated artwork
 - Public/private publishing options
 - Direct download functionality
 
 ### 🖼️ Background Removal (Premium)
-![Background Removal](./screenshots/remove_background.png)
+<img width="1362" height="597" alt="image" src="https://github.com/user-attachments/assets/6c53dd73-92f2-4974-bc28-9502bc6ed92b" />
+
 - Professional background removal tool
 - Drag-and-drop file upload
 - Instant processing and download
 - High-quality output with transparency
 
 ### ✂️ Object Removal (Premium)
-![Object Removal](./screenshots/remove_object.png)
+<img width="1365" height="600" alt="image" src="https://github.com/user-attachments/assets/7e5f0f3c-1b0a-4c03-af0a-5ca86f8d4a40" />
+
 - Smart object detection and removal
 - Natural background filling
 - Professional editing capabilities
 - Download processed images instantly
 
 ### 📄 Resume Review (Premium)
-![Resume Review](./screenshots/resume_review.png)
+<img width="1365" height="599" alt="image" src="https://github.com/user-attachments/assets/51c00f76-402b-43c8-99f2-e65e16543a76" />
+
 - AI-powered resume analysis
 - Detailed feedback and suggestions
 - Professional improvement recommendations
 - Copy analysis results for reference
 
 ### 🌟 Community Gallery
-![Community Gallery](./screenshots/community.png)
+<img width="1365" height="599" alt="image" src="https://github.com/user-attachments/assets/292d2104-3596-4ff5-92c3-e5751802425e" />
+
 - Published AI creations showcase
 - Like/unlike functionality with animations
 - Instagram-style interactions
