@@ -1,0 +1,29 @@
+{
+  // Reduce VS Code resource usage
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/.git/**": true,
+    "**/build/**": true,
+    "**/dev-dist/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/dev-dist": true
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": false
+  },
+  // Disable unnecessary features
+  "git.enabled": true,
+  "git.autorefresh": false,
+  "extensions.autoUpdate": false,
+  "typescript.disableAutomaticTypeAcquisition": true,
+  // Editor performance
+  "editor.minimap.enabled": false,
+  "editor.suggest.preview": false,
+  "editor.semanticHighlighting.enabled": false
+}
