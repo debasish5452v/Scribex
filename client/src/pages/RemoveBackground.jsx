@@ -63,10 +63,22 @@ const RemoveBackground = () => {
       }
 
       setLoading(true); // Show loading spinner
+      console.log('Starting image upload...', { fileName: input.name, fileSize: input.size });
 
       // Create FormData object and append uploaded image file
       const formData = new FormData();
       formData.append('image', input);
+
+      // Log FormData content for debugging
+      console.log('FormData created:', {
+        hasFile: formData.has('image'),
+        contentLength: input.size,
+        fileName: input.name
+      });
+
+      // Get authentication token
+      const token = await getToken();
+      console.log('Auth token obtained:', token ? 'Yes' : 'No');
 
       // Make API call to backend to remove image background using AI
       const { data } = await axios.post(
@@ -74,10 +86,16 @@ const RemoveBackground = () => {
         formData,
         {
           headers: {
-            'Authorization': `Bearer ${await getToken()}`,
+            'Authorization': `Bearer ${token}`,
             'Accept': 'application/json',
             'Content-Type': 'multipart/form-data',
           },
+          // Add timeout and show upload progress
+          timeout: 30000,
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            console.log(`Upload Progress: ${percentCompleted}%`);
+          }
         }
       );
 
@@ -89,18 +107,29 @@ const RemoveBackground = () => {
       }
     } catch (error) {
       
-      toast.error(error.message); // Show error message if API call failed
+      console.error('Upload failed:', error);
+      if (error.response) {
+        // The server responded with a status code outside the 2xx range
+        console.error('Server error:', error.response.data);
+        toast.error(error.response.data.message || 'Server error occurred');
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('Network error:', error.request);
+        toast.error('Network error - please check your connection');
+      } else {
+        // Something happened in setting up the request
+        console.error('Request setup error:', error.message);
+        toast.error('Error uploading image');
+      }
+    } finally {
+      setLoading(false); // Hide loading spinner after processing
     }
-    setLoading(false); // Hide loading spinner after processing
   };
 
   return (
     <div className="h-full overflow-y-scroll p-6 flex items-start flex-wrap gap-4 text-slate-700">
       {/* Left column: File upload form for background removal */}
-      <form
-        onSubmit={onSubmitHandler}
-        className="w-full max-w-lg p-4 bg-white rounded-lg border border-gray-200 "
-      >
+      <div className="w-full max-w-lg p-4 bg-white rounded-lg border border-gray-200">
         {/* Form header with sparkles icon and title */}
         <div className="flex items-center gap-3">
           <Sparkles className="w-6 text-[#FF4938]" />
@@ -109,59 +138,73 @@ const RemoveBackground = () => {
         
         {/* File upload section */}
         <p className="mt-6 text-sm font-medium">Upload Image</p>
-        <form className="w-full" onSubmit={(e) => e.preventDefault()}>
-          <input
-            type="file"
-            accept=".jpg,.jpeg,.png,.webp"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (!file) {
-                toast.error('Please select an image');
-                return;
-              }
+        <form 
+          onSubmit={onSubmitHandler}
+          className="w-full"
+        >
+          <div className="relative mt-2">
+            <input
+              type="file"
+              name="image"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) {
+                  toast.error('Please select an image');
+                  return;
+                }
 
-              // Check file size
-              if (file.size > 10 * 1024 * 1024) {
-                toast.error('File size should be less than 10MB');
-                e.target.value = '';
-                return;
-              }
+                // Check file size
+                if (file.size > 10 * 1024 * 1024) {
+                  toast.error('File size should be less than 10MB');
+                  e.target.value = '';
+                  return;
+                }
 
-              setInput(file);
-              toast.success('Image selected successfully!');
-            }}
-            className="w-full h-12 p-2 border border-gray-300 rounded-lg
-              text-sm text-gray-700 cursor-pointer
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-md file:border-0
-              file:text-sm file:font-semibold
-              file:bg-red-50 file:text-red-700"
-            style={{
-              WebkitAppearance: 'none',
-              MozAppearance: 'none',
-              appearance: 'none'
-            }}
-          />
+                setInput(file);
+                toast.success('Image selected successfully!');
+              }}
+              className="w-full h-12 p-2 border border-gray-300 rounded-lg
+                text-sm text-gray-700 cursor-pointer
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:text-sm file:font-semibold
+                file:bg-red-50 file:text-red-700"
+              style={{
+                WebkitAppearance: 'none',
+                MozAppearance: 'none',
+                appearance: 'none'
+              }}
+            />
+          </div>
+
           {/* Show selected file name if any */}
           {input && (
             <p className="mt-2 text-sm text-gray-600">
               Selected: {input.name}
             </p>
           )}
+
+          {/* Helper text showing supported file formats */}
+          <p className="text-xs text-gray-500 font-light mt-1">
+            Supports: JPG, PNG, and WebP formats
+          </p>
+
+          {/* Submit button with gradient background and eraser icon */}
+          <button 
+            type="submit"
+            disabled={loading || !input} 
+            className={`w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#F6AB41] to-[#FF4938] text-white px-4 py-2 mt-6 text-sm rounded-lg ${(!input || loading) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          >
+            {loading ? (
+              <span className='w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin'></span>
+            ) : (
+              <Eraser className="w-5" />
+            )}
+            Remove Background
+          </button>
         </form>
-
-        {/* Helper text showing supported file formats */}
-        <p className="text-xs text-gray-500 font-light mt-1">Supports: JPG, PNG, and other image formats</p>
-
-        {/* Submit button with gradient background and eraser icon */}
-        <button disabled={loading} className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#F6AB41] to-[#FF4938] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer">
-          {
-            loading ? <span className='w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin'></span>
-            : <Eraser className="w-5" />
-          }
-          Remove Background
-        </button>
-      </form>
+      </div>
 
       {/* Right column: Results display area for processed image */}
       <div className="w-full max-w-xl p-4 bg-white rounded-lg flex flex-col border border-gray-200 min-h-[28rem] ">
