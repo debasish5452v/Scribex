@@ -117,58 +117,36 @@ const RemoveObject = () => {
 
         {/* File upload section - first input for selecting the image */}
         <p className="mt-6 text-sm font-medium">Upload Image</p>
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => document.getElementById('objectRemovalInput').click()}
-            className="w-full h-12 p-2 px-3 mt-2 text-sm rounded-md border border-gray-300 bg-white text-gray-600 text-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-          >
-            {input ? input.name : 'Choose an image...'}
-          </button>
-          <input
-            id="objectRemovalInput"
-            onChange={(e) => {
-              try {
-                const file = e.target.files?.[0];
-                if (!file) {
-                  return;
-                }
-                
-                if (file.size > 10 * 1024 * 1024) {
-                  toast.error('File size should be less than 10MB');
-                  e.target.value = '';
-                  return;
-                }
-                
-                const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-                if (!validTypes.includes(file.type)) {
-                  toast.error('Please upload a valid image (JPEG, PNG, WebP)');
-                  e.target.value = '';
-                  return;
-                }
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
 
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => {
-                  setInput(file);
-                  toast.success('Image selected successfully!');
-                };
-                reader.onerror = () => {
-                  toast.error('Error reading file');
-                  e.target.value = '';
-                };
-              } catch (error) {
-                console.error('File selection error:', error);
-                toast.error('Error selecting file. Please try again.');
-                e.target.value = '';
-              }
-            }}
-            type="file"
-            accept="image/jpeg,image/png,image/jpg,image/webp"
-            className="hidden"
-            aria-label="Upload image"
-          />
-        </div>
+            if (file.size > 10 * 1024 * 1024) {
+              toast.error('File size should be less than 10MB');
+              e.target.value = '';
+              return;
+            }
+
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+              toast.error('Please upload a valid image (JPEG, PNG, WebP)');
+              e.target.value = '';
+              return;
+            }
+
+            setInput(file);
+            toast.success('Image selected successfully!');
+          }}
+          className="block w-full text-sm text-gray-600
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-md file:border-0
+            file:text-sm file:font-semibold
+            file:bg-red-50 file:text-red-700
+            hover:file:bg-red-100"
+        />
 
         {/* Object description section - second input for specifying what to remove */}
         <p className="mt-6 text-sm font-medium">Describe object name to remove</p>
