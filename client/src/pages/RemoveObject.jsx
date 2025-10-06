@@ -149,7 +149,6 @@ const RemoveObject = () => {
           type="file"
           accept="image/jpeg,image/png,image/jpg,image/webp"
           className="w-full h-12 p-2 px-3 mt-2 outline-none text-sm rounded-md border border-gray-300 text-gray-600"
-          capture="environment"
           multiple={false}
           required
         />
