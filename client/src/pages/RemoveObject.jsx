@@ -121,31 +121,65 @@ const RemoveObject = () => {
           type="file"
           accept="image/*"
           onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
+            console.log('File input change event triggered');
+            
+            const fileInput = e.target;
+            console.log('Files:', fileInput.files);
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+              console.log('No files selected');
+              toast.error('No file selected');
+              return;
+            }
+
+            const file = fileInput.files[0];
+            console.log('Selected file:', {
+              name: file.name,
+              type: file.type,
+              size: file.size
+            });
 
             if (file.size > 10 * 1024 * 1024) {
               toast.error('File size should be less than 10MB');
-              e.target.value = '';
+              fileInput.value = '';
               return;
             }
 
             const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
             if (!validTypes.includes(file.type)) {
               toast.error('Please upload a valid image (JPEG, PNG, WebP)');
-              e.target.value = '';
+              fileInput.value = '';
               return;
             }
 
-            setInput(file);
-            toast.success('Image selected successfully!');
+            // Create a URL for the file
+            const objectUrl = URL.createObjectURL(file);
+            
+            // Test if the file can be loaded
+            const img = new Image();
+            img.onload = () => {
+              console.log('Image loaded successfully');
+              URL.revokeObjectURL(objectUrl);
+              setInput(file);
+              toast.success('Image selected successfully!');
+            };
+            
+            img.onerror = () => {
+              console.log('Error loading image');
+              URL.revokeObjectURL(objectUrl);
+              toast.error('Error loading image. Please try another file.');
+              fileInput.value = '';
+            };
+            
+            img.src = objectUrl;
           }}
-          className="block w-full text-sm text-gray-600
+          className="block w-full text-sm text-gray-600 mt-2
             file:mr-4 file:py-2 file:px-4
             file:rounded-md file:border-0
             file:text-sm file:font-semibold
             file:bg-red-50 file:text-red-700
-            hover:file:bg-red-100"
+            hover:file:bg-red-100
+            border border-gray-300 rounded-md"
         />
 
         {/* Object description section - second input for specifying what to remove */}
