@@ -1,4 +1,8 @@
 {
+<<<<<<< HEAD
+    "git.ignoreLimitWarning": true
+}
+=======
   // Reduce VS Code resource usage
   "files.watcherExclude": {
     "**/node_modules/**": true,
@@ -27,3 +31,4 @@
   "editor.suggest.preview": false,
   "editor.semanticHighlighting.enabled": false
 }
+>>>>>>> 2cb0bd5acdd26eed8a2b66291e26957a5964263b
