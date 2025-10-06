@@ -22,12 +22,10 @@ const RemoveBackground = () => {
   */
 
   // State to store the uploaded image file (File object from file input)
-  const [input, setInput] = useState("");
-
-  // State to manage loading state (shows spinner when processing image)
+  const [input, setInput] = useState(null);
   const [loading, setLoading] = useState(false);
-  // State to store the processed image URL/content from the AI
   const [content, setContent] = useState("");
+  const fileInputRef = React.useRef(null);
 
   // Clerk hook to get authentication token for API requests
   const { getToken } = useAuth();
@@ -142,48 +140,73 @@ const RemoveBackground = () => {
           onSubmit={onSubmitHandler}
           className="w-full"
         >
-          <div className="relative mt-2">
+          <div className="mt-2 space-y-4">
             <input
               type="file"
               name="image"
+              id="bgRemovalInput"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (!file) {
-                  toast.error('Please select an image');
-                  return;
-                }
+                if (!file) return;
 
-                // Check file size
                 if (file.size > 10 * 1024 * 1024) {
                   toast.error('File size should be less than 10MB');
                   e.target.value = '';
+                  setInput(null);
+                  return;
+                }
+
+                const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (!validTypes.includes(file.type)) {
+                  toast.error('Please select a valid image (JPEG, PNG, or WebP)');
+                  e.target.value = '';
+                  setInput(null);
                   return;
                 }
 
                 setInput(file);
                 toast.success('Image selected successfully!');
               }}
-              className="w-full h-12 p-2 border border-gray-300 rounded-lg
-                text-sm text-gray-700 cursor-pointer
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-md file:border-0
-                file:text-sm file:font-semibold
-                file:bg-red-50 file:text-red-700"
-              style={{
-                WebkitAppearance: 'none',
-                MozAppearance: 'none',
-                appearance: 'none'
-              }}
+              className="hidden"
             />
-          </div>
+            
+            <button
+              type="button"
+              onClick={() => document.getElementById('bgRemovalInput').click()}
+              className="w-full h-12 px-4 bg-red-50 text-red-700 rounded-lg
+                border-2 border-dashed border-red-200 hover:bg-red-100
+                flex items-center justify-center gap-2 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Choose an Image
+            </button>
 
-          {/* Show selected file name if any */}
-          {input && (
-            <p className="mt-2 text-sm text-gray-600">
-              Selected: {input.name}
-            </p>
-          )}
+            {/* Show selected file name if any */}
+            {input && (
+              <div className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg">
+                <span className="text-sm text-gray-600 truncate">
+                  {input.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setInput(null);
+                    document.getElementById('bgRemovalInput').value = '';
+                  }}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            )}
 
           {/* Helper text showing supported file formats */}
           <p className="text-xs text-gray-500 font-light mt-1">
