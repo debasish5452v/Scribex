@@ -61,17 +61,22 @@ const RemoveObject = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-       setLoading(true); // Show loading spinner
+      if (!input) {
+        toast.error('Please select an image first');
+        return;
+      }
 
-       if(object.split(' ').length > 1){
-        setLoading(false);
-        return toast.error("Please enter only one object name to remove");
-       }
+      if (object.split(' ').length > 1) {
+        toast.error("Please enter only one object name to remove");
+        return;
+      }
+
+      setLoading(true); // Show loading spinner
 
       // Create FormData object and append uploaded image file
-      const formData = new FormData()
-      formData.append('image', input) 
-      formData.append('object', object) 
+      const formData = new FormData();
+      formData.append('image', input);
+      formData.append('object', object);
 
       // Make API call to backend to remove image object using AI
       const { data } = await axios.post(
@@ -79,7 +84,9 @@ const RemoveObject = () => {
         formData,
         {
           headers: {
-            Authorization: `Bearer ${await getToken()}`, // Include auth token for protected route
+            'Authorization': `Bearer ${await getToken()}`,
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
@@ -111,11 +118,40 @@ const RemoveObject = () => {
         {/* File upload section - first input for selecting the image */}
         <p className="mt-6 text-sm font-medium">Upload Image</p>
         <input
-          onChange={(e) => setInput(e.target.files[0])} // Gets first selected file and stores in input state
+          onChange={(e) => {
+            try {
+              const file = e.target.files?.[0];
+              if (!file) {
+                toast.error('No file selected');
+                return;
+              }
+              
+              if (file.size > 10 * 1024 * 1024) {
+                toast.error('File size should be less than 10MB');
+                e.target.value = '';
+                return;
+              }
+              
+              const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+              if (!validTypes.includes(file.type)) {
+                toast.error('Please upload a valid image (JPEG, PNG, WebP)');
+                e.target.value = '';
+                return;
+              }
+
+              setInput(file);
+            } catch (error) {
+              console.error('File selection error:', error);
+              toast.error('Error selecting file. Please try again.');
+              e.target.value = '';
+            }
+          }}
           type="file"
-          accept="image/*" // Restricts file picker to image formats only
-          className="w-full p-2 px-3 mt-2 outline-none text-sm rounded-md border border-gray-300 text-gray-600"
-          required // HTML validation - form won't submit without file selection
+          accept="image/jpeg,image/png,image/jpg,image/webp"
+          className="w-full h-12 p-2 px-3 mt-2 outline-none text-sm rounded-md border border-gray-300 text-gray-600"
+          capture="environment"
+          multiple={false}
+          required
         />
 
         {/* Object description section - second input for specifying what to remove */}

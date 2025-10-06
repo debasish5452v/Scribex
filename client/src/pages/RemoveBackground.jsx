@@ -57,19 +57,26 @@ const RemoveBackground = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-       setLoading(true); // Show loading spinner
+      if (!input) {
+        toast.error('Please select an image first');
+        return;
+      }
+
+      setLoading(true); // Show loading spinner
 
       // Create FormData object and append uploaded image file
-      const formData = new FormData()
-      formData.append('image', input) 
-       
+      const formData = new FormData();
+      formData.append('image', input);
+
       // Make API call to backend to remove image background using AI
       const { data } = await axios.post(
         "/api/ai/remove-image-background",
         formData,
         {
           headers: {
-            Authorization: `Bearer ${await getToken()}`, // Include auth token for protected route
+            'Authorization': `Bearer ${await getToken()}`,
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
@@ -103,11 +110,40 @@ const RemoveBackground = () => {
         {/* File upload section */}
         <p className="mt-6 text-sm font-medium">Upload Image</p>
         <input
-          onChange={(e) => setInput(e.target.files[0])} // Gets first selected file and stores in state
+          onChange={(e) => {
+            try {
+              const file = e.target.files?.[0];
+              if (!file) {
+                toast.error('No file selected');
+                return;
+              }
+              
+              if (file.size > 10 * 1024 * 1024) {
+                toast.error('File size should be less than 10MB');
+                e.target.value = '';
+                return;
+              }
+              
+              const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+              if (!validTypes.includes(file.type)) {
+                toast.error('Please upload a valid image (JPEG, PNG, WebP)');
+                e.target.value = '';
+                return;
+              }
+
+              setInput(file);
+            } catch (error) {
+              console.error('File selection error:', error);
+              toast.error('Error selecting file. Please try again.');
+              e.target.value = '';
+            }
+          }}
           type="file"
-          accept="image/*" // Restricts file picker to image formats only
-          className="w-full p-2 px-3 mt-2 outline-none text-sm rounded-md border border-gray-300 text-gray-600"
-          required // HTML validation - form won't submit without file selection
+          accept="image/jpeg,image/png,image/jpg,image/webp"
+          className="w-full h-12 p-2 px-3 mt-2 outline-none text-sm rounded-md border border-gray-300 text-gray-600"
+          capture="environment"
+          multiple={false}
+          required
         />
 
         {/* Helper text showing supported file formats */}
