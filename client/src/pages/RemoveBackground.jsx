@@ -109,45 +109,46 @@ const RemoveBackground = () => {
         
         {/* File upload section */}
         <p className="mt-6 text-sm font-medium">Upload Image</p>
-        <label className="block w-full">
-          <span className="sr-only">Choose image</span>
+        <form className="w-full" onSubmit={(e) => e.preventDefault()}>
           <input
-            name="image"
             type="file"
-            accept="image/jpeg,image/png,image/jpg,image/webp"
+            accept=".jpg,.jpeg,.png,.webp"
             onChange={(e) => {
-              try {
-                const file = e.target.files?.[0];
-                if (!file) {
-                  toast.error('Please select an image');
-                  return;
-                }
-
-                // Check file size
-                if (file.size > 10 * 1024 * 1024) {
-                  toast.error('File size should be less than 10MB');
-                  e.target.value = '';
-                  return;
-                }
-
-                // Set the input state immediately
-                setInput(file);
-                toast.success('Image selected successfully!');
-              } catch (error) {
-                console.error('Error selecting file:', error);
-                toast.error('Error selecting file. Please try again.');
-                e.target.value = '';
+              const file = e.target.files?.[0];
+              if (!file) {
+                toast.error('Please select an image');
+                return;
               }
+
+              // Check file size
+              if (file.size > 10 * 1024 * 1024) {
+                toast.error('File size should be less than 10MB');
+                e.target.value = '';
+                return;
+              }
+
+              setInput(file);
+              toast.success('Image selected successfully!');
             }}
-            className="w-full px-3 py-2 text-sm text-gray-700 
-              border border-gray-300 rounded-lg cursor-pointer
-              focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500
-              file:mr-4 file:py-2 file:px-4 
-              file:border-0 file:text-sm file:font-semibold
-              file:bg-red-50 file:text-red-700
-              hover:file:bg-red-100"
+            className="w-full h-12 p-2 border border-gray-300 rounded-lg
+              text-sm text-gray-700 cursor-pointer
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-md file:border-0
+              file:text-sm file:font-semibold
+              file:bg-red-50 file:text-red-700"
+            style={{
+              WebkitAppearance: 'none',
+              MozAppearance: 'none',
+              appearance: 'none'
+            }}
           />
-        </label>
+          {/* Show selected file name if any */}
+          {input && (
+            <p className="mt-2 text-sm text-gray-600">
+              Selected: {input.name}
+            </p>
+          )}
+        </form>
 
         {/* Helper text showing supported file formats */}
         <p className="text-xs text-gray-500 font-light mt-1">Supports: JPG, PNG, and other image formats</p>
