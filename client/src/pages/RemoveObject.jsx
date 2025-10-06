@@ -117,70 +117,45 @@ const RemoveObject = () => {
 
         {/* File upload section - first input for selecting the image */}
         <p className="mt-6 text-sm font-medium">Upload Image</p>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => {
-            console.log('File input change event triggered');
-            
-            const fileInput = e.target;
-            console.log('Files:', fileInput.files);
-            
-            if (!fileInput.files || fileInput.files.length === 0) {
-              console.log('No files selected');
-              toast.error('No file selected');
-              return;
-            }
+        <label className="block w-full">
+          <span className="sr-only">Choose image</span>
+          <input
+            name="image"
+            type="file"
+            accept="image/jpeg,image/png,image/jpg,image/webp"
+            onChange={(e) => {
+              try {
+                const file = e.target.files?.[0];
+                if (!file) {
+                  toast.error('Please select an image');
+                  return;
+                }
 
-            const file = fileInput.files[0];
-            console.log('Selected file:', {
-              name: file.name,
-              type: file.type,
-              size: file.size
-            });
+                // Check file size
+                if (file.size > 10 * 1024 * 1024) {
+                  toast.error('File size should be less than 10MB');
+                  e.target.value = '';
+                  return;
+                }
 
-            if (file.size > 10 * 1024 * 1024) {
-              toast.error('File size should be less than 10MB');
-              fileInput.value = '';
-              return;
-            }
-
-            const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-            if (!validTypes.includes(file.type)) {
-              toast.error('Please upload a valid image (JPEG, PNG, WebP)');
-              fileInput.value = '';
-              return;
-            }
-
-            // Create a URL for the file
-            const objectUrl = URL.createObjectURL(file);
-            
-            // Test if the file can be loaded
-            const img = new Image();
-            img.onload = () => {
-              console.log('Image loaded successfully');
-              URL.revokeObjectURL(objectUrl);
-              setInput(file);
-              toast.success('Image selected successfully!');
-            };
-            
-            img.onerror = () => {
-              console.log('Error loading image');
-              URL.revokeObjectURL(objectUrl);
-              toast.error('Error loading image. Please try another file.');
-              fileInput.value = '';
-            };
-            
-            img.src = objectUrl;
-          }}
-          className="block w-full text-sm text-gray-600 mt-2
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-md file:border-0
-            file:text-sm file:font-semibold
-            file:bg-red-50 file:text-red-700
-            hover:file:bg-red-100
-            border border-gray-300 rounded-md"
-        />
+                // Set the input state immediately
+                setInput(file);
+                toast.success('Image selected successfully!');
+              } catch (error) {
+                console.error('Error selecting file:', error);
+                toast.error('Error selecting file. Please try again.');
+                e.target.value = '';
+              }
+            }}
+            className="w-full px-3 py-2 text-sm text-gray-700 
+              border border-gray-300 rounded-lg cursor-pointer
+              focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500
+              file:mr-4 file:py-2 file:px-4 
+              file:border-0 file:text-sm file:font-semibold
+              file:bg-red-50 file:text-red-700
+              hover:file:bg-red-100"
+          />
+        </label>
 
         {/* Object description section - second input for specifying what to remove */}
         <p className="mt-6 text-sm font-medium">Describe object name to remove</p>
